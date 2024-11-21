@@ -1,8 +1,10 @@
 ---
-title: "Spotify Data"
+title: "Exploring the Evolution of David Tao's Music Through Spotify Data"
 author: "Yanzun Jiang, Siyuan Lu, Yi Tang, Jin Zhang"
-date: today
+thanks: "Code and data supporting this analysis is available at: https://github.com/ButF1rst/Spotify."
+date: 2024-11-21
 date-format: long
+abstract: "This study explores the musical evolution of David Tao using data from Spotify, analyzing features like tempo, energy, and valence (happiness) across his songs from 1997 to the present. The analysis reveals that tempo and valence do not show a straightforward positive relationship, while energy levels in his songs decreased over time before rising again, potentially reflecting personal or artistic shifts. These findings show how an artist's musical characteristics can change over decades, indicating the relationship between creative expression and personal or cultural contexts. By examining the dynamics of music over time, this study highlights how data can deepen our understanding of artistry and its evolution."
 format: pdf
 number-sections: true
 toc: true
@@ -22,6 +24,9 @@ library(knitr)
 \newpage
 
 # Introduction
+Music is a powerful medium that reflects the personal journeys of artists and the cultural landscapes of their times. With the advent of music streaming platforms, unprecedented amounts of data on songs and artists are now accessible, enabling detailed analysis of musical features such as tempo, energy, and valence. However, while much research has focused on broad trends across genres or artists, there is a gap in understanding how the creative expression of individual artists evolves over time. This study addresses this gap by examining the works of David Tao through a dataset sourced from Spotify.
+
+Our analysis highlights two key findings. First, there is no simple positive correlation between tempo and valence, indicating that faster songs are not always happier in Tao’s discography, likely due to variations in instrumentation and lyrical themes. Second, the energy levels in his songs exhibit a notable decline before rising again, possibly reflecting shifts in his personal experiences or creative priorities. These findings contribute to a deeper understanding of the complex interplay between an artist's personal evolution and their musical output.
 
 To conduct the analysis of songs on Spotify, a dataset downloaded from @spotify was utilized, as described in @sec-data. Based on the initial findings, it was observed that `tempo` and `valence` are not positively correlated in a simple (linear) way, while energy falls then rises with time (@sec-discussion). Also, supplementary insights are provided in @sec-appendix.
 
@@ -49,6 +54,8 @@ The variables analyzed in this study are listed below:
 
 `tempo`: the pace of the song.
 
+Energy is represented as a value between 0 and 1, captures the intensity and activity level of a song. Higher values suggest more energetic tracks, characterized by loudness, dynamic range, and rhythmic drive. Valence also measured on a scale from 0 to 1, reflects the positivity or happiness of a song. Lower values indicate more somber or negative tones, while higher values suggest happier or more cheerful moods. Tempo is Measured in beats per minute (BPM), tempo quantifies the speed or pace of a song. Higher BPM values indicate faster songs and vice versa.
+
 The dataset was accessed using the `spotifyr` package (@spotifyr). For the analysis, the R programming language was employed (@r), utilizing the `tidyverse` (@tidyverse) package for data cleaning, transformation, visualization, the `knitr` package to visualize the data, and the `here` package (@here) accessing the data in this analysis. Afterward, the cleaned dataset was processed and tested using additional functions from the `tidyverse` package (@tidyverse).
 
 ## Preview of the Dataset
@@ -69,35 +76,35 @@ kable(head(data), format = "markdown")
 
 ```{r, fig.width=4, fig.height=2}
 #| label: fig-tem-val
-#| fig-cap: Relationship of Tempo and Valence in David's Songs
+#| fig-cap: Relationship Between Tempo and Valence in David Tao's Songs
 #| echo: false
 #| warning: false
 #| message: false
 
 data |>
   ggplot(aes(x = tempo, y = valence)) +
-  geom_point(col = "lightblue") +
+  geom_point(col = "lightblue", alpha = 0.5) +
   geom_smooth() +
   labs(x = "Tempo", y = "Valence")
 ```
 
 ```{r, fig.width=4, fig.height=2}
 #| label: fig-time-ener
-#| fig-cap: Changes of Energy with Time in David's Songs
+#| fig-cap: Energy Trends in David Tao's Songs Over Time
 #| echo: false
 #| warning: false
 #| message: false
 
 data |>
   ggplot(aes(x = album_release_date, y = energy)) +
-  geom_point(col = "lightblue") +
+  geom_point(col = "lightblue", alpha = 0.5) +
   geom_smooth() +
   labs(x = "Date Released", y = "Energy")
 ```
 
-From @fig-tem-val, we can see that `tempo` and `valence` are not strictly positively correlated as we expected. This might due to the lyric and usage of different musical instruments.
+From @fig-tem-val, the scatterplot illustrates the relationship between tempo (in beats per minute) and valence (happiness) across David Tao's discography. The blue line represents a smoothed trend, showing a non-linear relationship where valence initially increases with tempo but later declines. We can see that `tempo` and `valence` are not strictly positively correlated as we expected. The shaded area indicates the confidence interval, reflecting variability in the data. These patterns suggest that tempo and valence are influenced by factors such as lyrical content and instrument rather than a simple linear association. 
 
-From @fig-time-ener, we can find that the energy for David's Songs falls then rises with time, which might be associated with his personal experience.
+From @fig-time-ener, this plot shows the variation in energy (scale 0–1) across David Tao's songs by release date. The blue line represents a smoothed trend, indicating a decline in energy levels during the early 2000s, followed by a gradual increase after 2010. The shaded region reflects the confidence interval, capturing variability across individual songs. These patterns may correspond to shifts in Tao's creative direction or personal experiences over his career.
 
 \newpage
 
@@ -119,12 +126,12 @@ The data cleaning process involved tidying the dates, filtering out useless colu
 #| message: false
 
 summarise_energy <- data |>
-  summarise(Mean = round(mean(energy), 3),
-            Median = round(median(energy), 3),
-            Variance = round(var(energy), 3),
-            Min = round(min(energy), 3),
-            Max = round(max(energy), 3),
-            IQR = round(IQR(energy), 3)
+  summarise(Mean = round(mean(energy), 2),
+            Median = round(median(energy), 2),
+            Variance = round(var(energy), 2),
+            Min = round(min(energy), 2),
+            Max = round(max(energy), 2),
+            IQR = round(IQR(energy), 2)
   )
 kable(summarise_energy, format = "markdown")
 ```
@@ -155,12 +162,12 @@ kable(summarise_valence, format = "markdown")
 #| message: false
 
 summarise_tempo <- data |>
-  summarise(Mean = round(mean(tempo), 3),
-            Median = round(median(tempo), 3),
-            Variance = round(var(tempo), 3),
-            Min = round(min(tempo), 3),
-            Max = round(max(tempo), 3),
-            IQR = round(IQR(tempo), 3)
+  summarise(Mean = round(mean(tempo), 2),
+            Median = round(median(tempo), 2),
+            Variance = round(var(tempo), 2),
+            Min = round(min(tempo), 2),
+            Max = round(max(tempo), 2),
+            IQR = round(IQR(tempo), 2)
   )
 kable(summarise_tempo, format = "markdown")
 ```

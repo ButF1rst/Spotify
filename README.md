@@ -11,7 +11,7 @@ The repo is structured as:
 
 -   `data/raw_data` contains the raw data as obtained from Spotify.
 -   `data/analysis_data` contains the cleaned dataset that was constructed in a `.csv` file.
--   `paper` contains the files used to generate the paper, including the Quarto document and the reference bibliography file, as well as the PDF. 
+-   `paper` contains the files used to generate the paper, including the Quarto document, the PDF, and the reference bibliography file. 
 -   `scripts` contains the R scripts used to download and clean the data.
 
 
